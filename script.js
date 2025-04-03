@@ -44,4 +44,9 @@ async function loadLevel(level) {
 function playSound(sound) {
     const audio = new Audio(`sounds/${sound}`);
     audio.play();
+
+// Ajouter la musique
+    const music = new Audio(`music/${level}.mp3`);
+    music.loop = true; // Lire en boucle
+    music.play(); // Lire la musique
 }
