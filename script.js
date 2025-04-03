@@ -5,8 +5,8 @@ async function loadLevel(level) {
     if (level === 'visage') {
         const img = document.createElement('img');
         img.src = 'levels/1-visage/visage.png';
-        img.style.width = '100%';
-        img.style.height = 'auto';
+        img.style.width = 'auto';
+        img.style.height = '100%';
         img.style.display = 'block';
         img.style.margin = '0 auto';
         gameContainer.appendChild(img);
