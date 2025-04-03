@@ -1,12 +1,14 @@
 async function loadLevel(level) {
     const gameContainer = document.getElementById('game-container');
     gameContainer.innerHTML = ''; // Clear previous level
+    gameContainer.classList.remove('visage', 'corps', 'animaux', 'fruits', 'legumes'); // Remove any existing level class
+    gameContainer.classList.add(level); // Add class for the current level
 
     if (level === 'visage') {
         const img = document.createElement('img');
         img.src = 'levels/1-visage/visage.png';
-        img.style.width = 'auto';
         img.style.height = '100%';
+        img.style.width = 'auto';
         img.style.display = 'block';
         img.style.margin = '0 auto';
         gameContainer.appendChild(img);
