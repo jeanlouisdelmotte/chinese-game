@@ -1,4 +1,7 @@
+let currentLevel;
+
 async function loadLevel(level) {
+    currentLevel = level; // Stocker le niveau actuel
     const gameContainer = document.getElementById('game-container');
     gameContainer.innerHTML = ''; // Clear previous level
     gameContainer.classList.remove('visage', 'corps', 'animaux', 'fruits', 'legumes'); // Remove any existing level class
@@ -39,14 +42,14 @@ async function loadLevel(level) {
             }
         });
     }
+
+    // Ajouter la musique
+    const music = new Audio(`musique/${currentLevel}.mp3`);
+    music.loop = true; // Lire en boucle
+    music.play(); // Lire la musique
 }
 
 function playSound(sound) {
     const audio = new Audio(`sounds/${sound}`);
     audio.play();
-
-// Ajouter la musique
-    const music = new Audio(`music/${level}.mp3`);
-    music.loop = true; // Lire en boucle
-    music.play(); // Lire la musique
 }
