@@ -1,3 +1,5 @@
+/*version JS 1.001 */
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
