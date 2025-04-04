@@ -164,6 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadLevel('menu');
     }
 
+    document.getElementById('back-to-menu').addEventListener('click', () => backToMenu());
+    
     // Charger le niveau initial
     loadLevel('menu');
 });
