@@ -7,8 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentLevel;
     let currentMusic;
-    let timelines = [];
-    let selectedTimelineIndex = 0;
+    let timeline = [];
 
     async function loadLevel(level) {
         console.log(`Loading level: ${level}`);
@@ -65,35 +64,30 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Failed to load CSV file:', error);
             }
-            initializeTimelines(); // Call initializeTimelines here, AFTER gameContainer is displayed
+            initializeTimeline(); // Call initializeTimeline here, AFTER gameContainer is displayed
         }
     }
 
-    function initializeTimelines() {
-        const timelinesContainer = document.getElementById('timelines-container');
-        if (!timelinesContainer) {
-            console.error("Conteneur des timelines introuvable.");
+    function initializeTimeline() {
+        const timelineContainer = document.getElementById('timelines-container');
+        if (!timelineContainer) {
+            console.error("Conteneur de la timeline introuvable.");
             return;
         }
 
-        timelinesContainer.innerHTML = '';
-        timelines = [];
+        timelineContainer.innerHTML = '';
+        timeline = [];
 
-        for (let i = 0; i < 3; i++) {
-            const timeline = document.createElement('div');
-            timeline.classList.add('timeline');
-            if (i === selectedTimelineIndex) {
-                timeline.classList.add('selected');
-            }
-            timeline.addEventListener('click', () => selectTimeline(i));
+        const timelineElement = document.createElement('div');
+        timelineElement.classList.add('timeline');
+        timelineElement.classList.add('selected');
 
-            const progressBar = document.createElement('div');
-            progressBar.classList.add('timeline-progress');
-            timeline.appendChild(progressBar);
+        const progressBar = document.createElement('div');
+        progressBar.classList.add('timeline-progress');
+        timelineElement.appendChild(progressBar);
 
-            timelinesContainer.appendChild(timeline);
-            timelines.push({ element: timeline, sounds: [] });
-        }
+        timelineContainer.appendChild(timelineElement);
+        timeline.push({ element: timelineElement, sounds: [] });
 
         startTimer();
     }
@@ -101,16 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function startTimer() {
         const interval = 10000; // 10 secondes
         setInterval(() => {
-            playAllTimelines();
+            playTimeline();
         }, interval);
     }
 
     function addSoundToTimeline(sound) {
-        if (!timelines[selectedTimelineIndex]) {
-            console.error("Timeline sélectionnée introuvable ou non initialisée.");
-            return;
-        }
-
         const audio = new Audio(`sounds/${sound}`);
         audio.addEventListener('loadedmetadata', () => {
             const duration = audio.duration * 1000; // Durée en millisecondes
@@ -119,18 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const soundBar = document.createElement('div');
             soundBar.classList.add('sound-bar');
             soundBar.style.width = `${widthPercentage}%`;
-            soundBar.style.left = `${timelines[selectedTimelineIndex].sounds.length * widthPercentage}%`;
+            soundBar.style.left = `${timeline[0].sounds.length * widthPercentage}%`;
             soundBar.dataset.sound = sound;
             soundBar.dataset.startTime = Date.now() % 10000;
 
-            timelines[selectedTimelineIndex].element.appendChild(soundBar);
-            timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
+            timeline[0].element.appendChild(soundBar);
+            timeline[0].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
 
             soundBar.addEventListener('click', () => {
                 soundBar.remove();
-                const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
+                const index = timeline[0].sounds.indexOf(soundBar);
                 if (index > -1) {
-                    timelines[selectedTimelineIndex].sounds.splice(index, 1);
+                    timeline[0].sounds.splice(index, 1);
                 }
             });
         });
@@ -138,30 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.play();
     }
 
-    function playAllTimelines() {
-        timelines.forEach(timeline => {
-            timeline.sounds.forEach(soundData => {
-                const currentTime = Date.now() % 10000;
-                if (currentTime >= soundData.startTime && currentTime < soundData.startTime + soundData.element.offsetWidth / 18.2) {
-                    const audio = new Audio(`sounds/${soundData.sound}`);
-                    audio.play();
-                }
-            });
-        });
-    }
-
-    function selectTimeline(index) {
-        if (index < 0 || index >= timelines.length) {
-            console.error("Index de timeline invalide :", index);
-            return;
-        }
-
-        selectedTimelineIndex = index;
-        timelines.forEach((timeline, i) => {
-            if (i === index) {
-                timeline.element.classList.add('selected');
-            } else {
-                timeline.element.classList.remove('selected');
+    function playTimeline() {
+        timeline[0].sounds.forEach(soundData => {
+            const currentTime = Date.now() % 10000;
+            if (currentTime >= soundData.startTime && currentTime < soundData.startTime + soundData.element.offsetWidth / 18.2) {
+                const audio = new Audio(`sounds/${soundData.sound}`);
+                audio.play();
             }
         });
     }
@@ -177,5 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-/*version JS 1.004 */
+
+/*version JS 1.005 */
 
