@@ -144,12 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 
-    function playAllTimelines() {
+   function playAllTimelines() {
     timelines.forEach(timeline => {
         timeline.sounds.forEach(soundData => {
             const currentTime = Date.now() % 10000;
-            const soundStartTime = parseInt(soundData.startTime); // Retrieve the correct start time
-            const soundDuration = (soundData.element.offsetWidth / 100) * 10000; // Calculate sound duration in ms
+            const soundStartTime = parseFloat(soundData.element.dataset.startTime); // Get the sound's start time
+            const soundDuration = (soundData.element.offsetWidth / 100) * 10000;
 
             if (currentTime >= soundStartTime && currentTime <= (soundStartTime + soundDuration)) {
                 const audio = new Audio(`sounds/${soundData.sound}`);
@@ -187,5 +187,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-/*version JS 1.007 */
+/*version JS 1.008 */
 
