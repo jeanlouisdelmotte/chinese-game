@@ -77,9 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             initializeTimelines();
         }
+
+        if (level !== 'menu') {
+        initializeTimelines(); // Assurez-vous que cette ligne est exécutée.
+        }
     }
 
-    function initializeTimelines() {
+    /*function initializeTimelines() {
         const timelinesContainer = document.getElementById('timelines-container');
         if (timelinesContainer) {
             timelinesContainer.innerHTML = '';
@@ -103,6 +107,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
             startTimer();
         }
+    }*/
+
+    function initializeTimelines() {
+    const timelinesContainer = document.getElementById('timelines-container');
+    if (!timelinesContainer) {
+        console.error("Conteneur des timelines introuvable.");
+        return;
+    }
+
+    timelinesContainer.innerHTML = '';
+    timelines = [];
+
+    for (let i = 0; i < 3; i++) {
+        const timeline = document.createElement('div');
+        timeline.classList.add('timeline');
+        if (i === selectedTimelineIndex) {
+            timeline.classList.add('selected');
+        }
+        timeline.addEventListener('click', () => selectTimeline(i));
+
+        const progressBar = document.createElement('div');
+        progressBar.classList.add('timeline-progress');
+        timeline.appendChild(progressBar);
+
+        timelinesContainer.appendChild(timeline);
+        timelines.push({ element: timeline, sounds: [] });
+    }
+
+    startTimer();
     }
 
     function startTimer() {
@@ -112,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, interval);
     }
 
-    function addSoundToTimeline(sound) {
+    /*function addSoundToTimeline(sound) {
         const audio = new Audio(`sounds/${sound}`);
         audio.play();
         const duration = audio.duration * 1000; // Durée en millisecondes
@@ -135,6 +168,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 timelines[selectedTimelineIndex].sounds.splice(index, 1);
             }
         });
+    }*/
+
+    function addSoundToTimeline(sound) {
+    if (!timelines[selectedTimelineIndex]) {
+        console.error("Timeline sélectionnée introuvable ou non initialisée.");
+        return;
+    }
+
+    const audio = new Audio(`sounds/${sound}`);
+    audio.addEventListener('loadedmetadata', () => {
+        const duration = audio.duration * 1000; // Durée en millisecondes
+        const widthPercentage = (duration / 10000) * 100; // Largeur en pourcentage
+
+        const soundBar = document.createElement('div');
+        soundBar.classList.add('sound-bar');
+        soundBar.style.width = `${widthPercentage}%`;
+        soundBar.style.left = `${timelines[selectedTimelineIndex].sounds.length * widthPercentage}%`;
+        soundBar.dataset.sound = sound;
+        soundBar.dataset.startTime = Date.now() % 10000;
+
+        timelines[selectedTimelineIndex].element.appendChild(soundBar);
+        timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
+
+        soundBar.addEventListener('click', () => {
+            soundBar.remove();
+            const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
+            if (index > -1) {
+                timelines[selectedTimelineIndex].sounds.splice(index, 1);
+            }
+        });
+    });
+
+    audio.play();
     }
 
     function playAllTimelines() {
@@ -149,7 +215,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /*function selectTimeline(index) {
+        selectedTimelineIndex = index;
+        timelines.forEach((timeline, i) => {
+            if (i === index) {
+                timeline.element.classList.add('selected');
+            } else {
+                timeline.element.classList.remove('selected');
+            }
+        });
+    }*/
+
     function selectTimeline(index) {
+        if (index < 0 || index >= timelines.length) {
+            console.error("Index de timeline invalide :", index);
+            return;
+        }
+    
         selectedTimelineIndex = index;
         timelines.forEach((timeline, i) => {
             if (i === index) {
