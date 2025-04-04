@@ -1,4 +1,4 @@
-/*version JS 1.001 */
+/*version JS 1.002 */
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
@@ -25,15 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (level === 'menu') {
             menu.style.display = 'flex';
             gameContainer.style.display = 'none';
-
-            // Commenter temporairement la musique du menu
-            /*
-            currentMusic = new Audio(`music/menu.mp3`);
-            currentMusic.loop = true;
-            document.addEventListener('click', () => {
-                currentMusic.play();
-            }, { once: true });
-            */
+            return;  // Ajout d'un return pour éviter d'exécuter le reste du code
         } else {
             menu.style.display = 'none';
             gameContainer.style.display = 'block';
@@ -76,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Failed to load CSV file:', error);
             }
+
             initializeTimelines();
         }
     }
@@ -115,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
             playAllTimelines();
         }, interval);
     }
-
 
     function addSoundToTimeline(sound) {
         if (!timelines[selectedTimelineIndex]) {
