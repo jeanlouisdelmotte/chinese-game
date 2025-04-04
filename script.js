@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => loadLevel(btn.dataset.level));
+    });
+
     let currentLevel;
     let currentMusic;
     let timelines = [];
