@@ -11,64 +11,63 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedTimelineIndex = 0;
 
     async function loadLevel(level) {
-    console.log(`Loading level: ${level}`);
-    currentLevel = level;
-    const gameContainer = document.getElementById('game-container');
-    const menu = document.getElementById('menu');
+        console.log(`Loading level: ${level}`);
+        currentLevel = level;
+        const gameContainer = document.getElementById('game-container');
+        const menu = document.getElementById('menu');
 
-    if (currentMusic) {
-        currentMusic.pause();
-    }
-
-    if (level === 'menu') {
-        menu.style.display = 'flex';
-        gameContainer.style.display = 'none';
-    } else {
-        menu.style.display = 'none';
-        gameContainer.style.display = 'block';
-        gameContainer.innerHTML = '';
-        gameContainer.classList.remove('visage', 'corps', 'animaux', 'fruits', 'legumes');
-        gameContainer.classList.add(level);
-
-        const img = document.createElement('img');
-        img.src = `levels/${level}/${level}.png`;
-        img.style.height = '100%';
-        img.style.width = 'auto';
-        img.style.display = 'block';
-        img.style.margin = '0 auto';
-        gameContainer.appendChild(img);
-
-        try {
-            const response = await fetch(`levels/${level}/clickable_areas.csv`);
-            const text = await response.text();
-            const rows = text.split('\n').slice(1);
-
-            rows.forEach(row => {
-                const [id, top, left, width, height, sound] = row.split(',');
-                if (id) {
-                    const div = document.createElement('div');
-                    div.classList.add('clickable-area');
-                    div.style.top = `${top}%`;
-                    div.style.left = `${left}%`;
-                    div.style.width = `${width}%`;
-                    div.style.height = `${height}%`;
-                    div.dataset.sound = sound;
-                    gameContainer.appendChild(div);
-
-                    div.addEventListener('click', () => {
-                        addSoundToTimeline(sound);
-                        div.classList.add('active');
-                        setTimeout(() => div.classList.remove('active'), 500);
-                    });
-                }
-            });
-        } catch (error) {
-            console.error('Failed to load CSV file:', error);
+        if (currentMusic) {
+            currentMusic.pause();
         }
-        initializeTimelines(); // Call initializeTimelines here, AFTER gameContainer is displayed
 
+        if (level === 'menu') {
+            menu.style.display = 'flex';
+            gameContainer.style.display = 'none';
+        } else {
+            menu.style.display = 'none';
+            gameContainer.style.display = 'block';
+            gameContainer.innerHTML = '';
+            gameContainer.classList.remove('visage', 'corps', 'animaux', 'fruits', 'legumes');
+            gameContainer.classList.add(level);
+
+            const img = document.createElement('img');
+            img.src = `levels/${level}/${level}.png`;
+            img.style.height = '100%';
+            img.style.width = 'auto';
+            img.style.display = 'block';
+            img.style.margin = '0 auto';
+            gameContainer.appendChild(img);
+
+            try {
+                const response = await fetch(`levels/${level}/clickable_areas.csv`);
+                const text = await response.text();
+                const rows = text.split('\n').slice(1);
+
+                rows.forEach(row => {
+                    const [id, top, left, width, height, sound] = row.split(',');
+                    if (id) {
+                        const div = document.createElement('div');
+                        div.classList.add('clickable-area');
+                        div.style.top = `${top}%`;
+                        div.style.left = `${left}%`;
+                        div.style.width = `${width}%`;
+                        div.style.height = `${height}%`;
+                        div.dataset.sound = sound;
+                        gameContainer.appendChild(div);
+
+                        div.addEventListener('click', () => {
+                            addSoundToTimeline(sound);
+                            div.classList.add('active');
+                            setTimeout(() => div.classList.remove('active'), 500);
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to load CSV file:', error);
+            }
+            initializeTimelines(); // Call initializeTimelines here, AFTER gameContainer is displayed
+        }
     }
-}
 
     function initializeTimelines() {
         const timelinesContainer = document.getElementById('timelines-container');
@@ -177,5 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLevel('menu');
 });
 
-/*version JS 1.003 */
+
+/*version JS 1.004 */
 
