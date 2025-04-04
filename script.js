@@ -1,27 +1,42 @@
 let currentLevel;
+let currentMusic;
+let timelines = [];
+let selectedTimelineIndex = 0;
 
 async function loadLevel(level) {
-    currentLevel = level; // Stocker le niveau actuel
+    currentLevel = level;
     const gameContainer = document.getElementById('game-container');
-    gameContainer.innerHTML = ''; // Clear previous level
-    gameContainer.classList.remove('visage', 'corps', 'animaux', 'fruits', 'legumes'); // Remove any existing level class
-    gameContainer.classList.add(level); // Add class for the current level
+    const menu = document.getElementById('menu');
 
-    if (level === 'visage') {
+    if (currentMusic) {
+        currentMusic.pause();
+    }
+
+    if (level === 'menu') {
+        menu.style.display = 'flex';
+        gameContainer.style.display = 'none';
+        currentMusic = new Audio(`music/menu.mp3`);
+        currentMusic.loop = true;
+        currentMusic.play();
+    } else {
+        menu.style.display = 'none';
+        gameContainer.style.display = 'block';
+        gameContainer.innerHTML = '';
+        gameContainer.classList.remove('visage', 'corps', 'animaux', 'fruits', 'legumes');
+        gameContainer.classList.add(level);
+
         const img = document.createElement('img');
-        img.src = 'levels/1-visage/visage.png';
+        img.src = `levels/${level}/${level}.png`;
         img.style.height = '100%';
         img.style.width = 'auto';
         img.style.display = 'block';
         img.style.margin = '0 auto';
         gameContainer.appendChild(img);
 
-        // Lire le fichier CSV
-        const response = await fetch('levels/1-visage/clickable_areas.csv');
+        const response = await fetch(`levels/${level}/clickable_areas.csv`);
         const text = await response.text();
+        const rows = text.split('\n').slice(1);
 
-        // Parser le CSV
-        const rows = text.split('\n').slice(1); // Ignorer l'en-tête
         rows.forEach(row => {
             const [id, top, left, width, height, sound] = row.split(',');
             if (id) {
@@ -35,21 +50,97 @@ async function loadLevel(level) {
                 gameContainer.appendChild(div);
 
                 div.addEventListener('click', () => {
-                    playSound(sound);
+                    addSoundToTimeline(sound);
                     div.classList.add('active');
                     setTimeout(() => div.classList.remove('active'), 500);
                 });
             }
         });
-    }
 
-    // Ajouter la musique
-    const music = new Audio(`music/${currentLevel}.mp3`);
-    music.loop = true; // Lire en boucle
-    music.play(); // Lire la musique
+        initializeTimelines();
+    }
 }
 
-function playSound(sound) {
+function initializeTimelines() {
+    const timelinesContainer = document.getElementById('timelines-container');
+    timelinesContainer.innerHTML = '';
+    timelines = [];
+
+    for (let i = 0; i < 3; i++) {
+        const timeline = document.createElement('div');
+        timeline.classList.add('timeline');
+        if (i === selectedTimelineIndex) {
+            timeline.classList.add('selected');
+        }
+        timeline.addEventListener('click', () => selectTimeline(i));
+
+        const progressBar = document.createElement('div');
+        progressBar.classList.add('timeline-progress');
+        timeline.appendChild(progressBar);
+
+        timelinesContainer.appendChild(timeline);
+        timelines.push({ element: timeline, sounds: [] });
+    }
+
+    startTimer();
+}
+
+function startTimer() {
+    const interval = 10000; // 10 secondes
+    setInterval(() => {
+        playAllTimelines();
+    }, interval);
+}
+
+function addSoundToTimeline(sound) {
     const audio = new Audio(`sounds/${sound}`);
     audio.play();
+
+    const duration = audio.duration * 1000; // Durée en millisecondes
+    const widthPercentage = (duration / 10000) * 100; // Largeur en pourcentage
+
+    const soundBar = document.createElement('div');
+    soundBar.classList.add('sound-bar');
+    soundBar.style.width = `${widthPercentage}%`;
+    soundBar.style.left = `${timelines[selectedTimelineIndex].sounds.length * widthPercentage}%`;
+    soundBar.dataset.sound = sound;
+    soundBar.dataset.startTime = Date.now() % 10000;
+
+    timelines[selectedTimelineIndex].element.appendChild(soundBar);
+    timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
+
+    soundBar.addEventListener('click', () => {
+        soundBar.remove();
+        const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
+        if (index > -1) {
+            timelines[selectedTimelineIndex].sounds.splice(index, 1);
+        }
+    });
+}
+
+function playAllTimelines() {
+    timelines.forEach(timeline => {
+        timeline.sounds.forEach(soundData => {
+            const currentTime = Date.now() % 10000;
+            if (currentTime >= soundData.startTime && currentTime < soundData.startTime + soundData.element.offsetWidth / 18.2) {
+                const audio = new Audio(`sounds/${soundData.sound}`);
+                audio.play();
+            }
+        });
+    });
+}
+
+function selectTimeline(index) {
+    selectedTimelineIndex = index;
+    timelines.forEach((timeline, i) => {
+        if (i === index) {
+            timeline.element.classList.add('selected');
+        } else {
+            timeline.element.classList.remove('selected');
+        }
+    });
+}
+
+function backToMenu() {
+    loadLevel('menu');
 }
