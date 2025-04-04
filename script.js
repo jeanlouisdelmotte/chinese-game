@@ -18,7 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
             gameContainer.style.display = 'none';
             currentMusic = new Audio(`music/menu.mp3`);
             currentMusic.loop = true;
-            currentMusic.play();
+            // Jouer la musique après une interaction utilisateur
+            document.addEventListener('click', () => {
+                currentMusic.play();
+            }, { once: true });
         } else {
             menu.style.display = 'none';
             gameContainer.style.display = 'block';
