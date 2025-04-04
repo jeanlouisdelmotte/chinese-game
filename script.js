@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
     document.querySelectorAll('.level-btn').forEach(btn => {
-      btn.addEventListener('click', () => loadLevel(btn.dataset.level));
+        btn.addEventListener('click', () => loadLevel(btn.dataset.level));
     });
 
     let currentLevel;
@@ -74,68 +74,37 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Failed to load CSV file:', error);
             }
-
             initializeTimelines();
         }
-
-        if (level !== 'menu') {
-        initializeTimelines(); // Assurez-vous que cette ligne est exécutée.
-        }
     }
-
-    /*function initializeTimelines() {
-        const timelinesContainer = document.getElementById('timelines-container');
-        if (timelinesContainer) {
-            timelinesContainer.innerHTML = '';
-            timelines = [];
-
-            for (let i = 0; i < 3; i++) {
-                const timeline = document.createElement('div');
-                timeline.classList.add('timeline');
-                if (i === selectedTimelineIndex) {
-                    timeline.classList.add('selected');
-                }
-                timeline.addEventListener('click', () => selectTimeline(i));
-
-                const progressBar = document.createElement('div');
-                progressBar.classList.add('timeline-progress');
-                timeline.appendChild(progressBar);
-
-                timelinesContainer.appendChild(timeline);
-                timelines.push({ element: timeline, sounds: [] });
-            }
-
-            startTimer();
-        }
-    }*/
 
     function initializeTimelines() {
-    const timelinesContainer = document.getElementById('timelines-container');
-    if (!timelinesContainer) {
-        console.error("Conteneur des timelines introuvable.");
-        return;
-    }
-
-    timelinesContainer.innerHTML = '';
-    timelines = [];
-
-    for (let i = 0; i < 3; i++) {
-        const timeline = document.createElement('div');
-        timeline.classList.add('timeline');
-        if (i === selectedTimelineIndex) {
-            timeline.classList.add('selected');
+        const timelinesContainer = document.getElementById('timelines-container');
+        if (!timelinesContainer) {
+            console.error("Conteneur des timelines introuvable.");
+            return;
         }
-        timeline.addEventListener('click', () => selectTimeline(i));
 
-        const progressBar = document.createElement('div');
-        progressBar.classList.add('timeline-progress');
-        timeline.appendChild(progressBar);
+        timelinesContainer.innerHTML = '';
+        timelines = [];
 
-        timelinesContainer.appendChild(timeline);
-        timelines.push({ element: timeline, sounds: [] });
-    }
+        for (let i = 0; i < 3; i++) {
+            const timeline = document.createElement('div');
+            timeline.classList.add('timeline');
+            if (i === selectedTimelineIndex) {
+                timeline.classList.add('selected');
+            }
+            timeline.addEventListener('click', () => selectTimeline(i));
 
-    startTimer();
+            const progressBar = document.createElement('div');
+            progressBar.classList.add('timeline-progress');
+            timeline.appendChild(progressBar);
+
+            timelinesContainer.appendChild(timeline);
+            timelines.push({ element: timeline, sounds: [] });
+        }
+
+        startTimer();
     }
 
     function startTimer() {
@@ -145,62 +114,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }, interval);
     }
 
-    /*function addSoundToTimeline(sound) {
-        const audio = new Audio(`sounds/${sound}`);
-        audio.play();
-        const duration = audio.duration * 1000; // Durée en millisecondes
-        const widthPercentage = (duration / 10000) * 100; // Largeur en pourcentage
-
-        const soundBar = document.createElement('div');
-        soundBar.classList.add('sound-bar');
-        soundBar.style.width = `${widthPercentage}%`;
-        soundBar.style.left = `${timelines[selectedTimelineIndex].sounds.length * widthPercentage}%`;
-        soundBar.dataset.sound = sound;
-        soundBar.dataset.startTime = Date.now() % 10000;
-
-        timelines[selectedTimelineIndex].element.appendChild(soundBar);
-        timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
-
-        soundBar.addEventListener('click', () => {
-            soundBar.remove();
-            const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
-            if (index > -1) {
-                timelines[selectedTimelineIndex].sounds.splice(index, 1);
-            }
-        });
-    }*/
 
     function addSoundToTimeline(sound) {
-    if (!timelines[selectedTimelineIndex]) {
-        console.error("Timeline sélectionnée introuvable ou non initialisée.");
-        return;
-    }
+        if (!timelines[selectedTimelineIndex]) {
+            console.error("Timeline sélectionnée introuvable ou non initialisée.");
+            return;
+        }
 
-    const audio = new Audio(`sounds/${sound}`);
-    audio.addEventListener('loadedmetadata', () => {
-        const duration = audio.duration * 1000; // Durée en millisecondes
-        const widthPercentage = (duration / 10000) * 100; // Largeur en pourcentage
+        const audio = new Audio(`sounds/${sound}`);
+        audio.addEventListener('loadedmetadata', () => {
+            const duration = audio.duration * 1000; // Durée en millisecondes
+            const widthPercentage = (duration / 10000) * 100; // Largeur en pourcentage
 
-        const soundBar = document.createElement('div');
-        soundBar.classList.add('sound-bar');
-        soundBar.style.width = `${widthPercentage}%`;
-        soundBar.style.left = `${timelines[selectedTimelineIndex].sounds.length * widthPercentage}%`;
-        soundBar.dataset.sound = sound;
-        soundBar.dataset.startTime = Date.now() % 10000;
+            const soundBar = document.createElement('div');
+            soundBar.classList.add('sound-bar');
+            soundBar.style.width = `${widthPercentage}%`;
+            soundBar.style.left = `${timelines[selectedTimelineIndex].sounds.length * widthPercentage}%`;
+            soundBar.dataset.sound = sound;
+            soundBar.dataset.startTime = Date.now() % 10000;
 
-        timelines[selectedTimelineIndex].element.appendChild(soundBar);
-        timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
+            timelines[selectedTimelineIndex].element.appendChild(soundBar);
+            timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: soundBar.dataset.startTime });
 
-        soundBar.addEventListener('click', () => {
-            soundBar.remove();
-            const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
-            if (index > -1) {
-                timelines[selectedTimelineIndex].sounds.splice(index, 1);
-            }
+            soundBar.addEventListener('click', () => {
+                soundBar.remove();
+                const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
+                if (index > -1) {
+                    timelines[selectedTimelineIndex].sounds.splice(index, 1);
+                }
+            });
         });
-    });
 
-    audio.play();
+        audio.play();
     }
 
     function playAllTimelines() {
@@ -215,23 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /*function selectTimeline(index) {
-        selectedTimelineIndex = index;
-        timelines.forEach((timeline, i) => {
-            if (i === index) {
-                timeline.element.classList.add('selected');
-            } else {
-                timeline.element.classList.remove('selected');
-            }
-        });
-    }*/
-
     function selectTimeline(index) {
         if (index < 0 || index >= timelines.length) {
             console.error("Index de timeline invalide :", index);
             return;
         }
-    
+
         selectedTimelineIndex = index;
         timelines.forEach((timeline, i) => {
             if (i === index) {
@@ -247,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('back-to-menu').addEventListener('click', () => backToMenu());
-    
+
     // Charger le niveau initial
     loadLevel('menu');
 });
