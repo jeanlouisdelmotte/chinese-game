@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded and parsed");
+
     let currentLevel;
     let currentMusic;
     let timelines = [];
     let selectedTimelineIndex = 0;
 
     async function loadLevel(level) {
+        console.log(`Loading level: ${level}`);
         currentLevel = level;
         const gameContainer = document.getElementById('game-container');
         const menu = document.getElementById('menu');
