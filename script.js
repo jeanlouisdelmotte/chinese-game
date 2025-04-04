@@ -16,12 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (level === 'menu') {
             menu.style.display = 'flex';
             gameContainer.style.display = 'none';
+
+            // Commenter temporairement la musique du menu
+            /*
             currentMusic = new Audio(`music/menu.mp3`);
             currentMusic.loop = true;
-            // Jouer la musique après une interaction utilisateur
             document.addEventListener('click', () => {
                 currentMusic.play();
             }, { once: true });
+            */
         } else {
             menu.style.display = 'none';
             gameContainer.style.display = 'block';
