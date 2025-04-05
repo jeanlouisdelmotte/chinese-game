@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMusic;
     let timelines = [];
     let selectedTimelineIndex = 0;
+    let begin = 0;
+    let prev = 0;
 
     async function loadLevel(level) {
         console.log(`Loading level: ${level}`);
@@ -78,6 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const audio = new Audio(`music/menu.mp3`);
+        audio.volume = 0.1;
+        audio.addEventListener('loadedmetadata', () => {
+            audio.play();
+        })
+
         timelinesContainer.innerHTML = '';
         timelines = [];
 
@@ -102,9 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startTimer() {
         const interval = 10000; // 10 secondes
+        begin = Date.now();
+        prev = begin % 10000;
         setInterval(() => {
             playAllTimelines();
-        }, interval);
+        }, interval / 1200);
     }
 
     function addSoundToTimeline(sound) {
@@ -117,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.addEventListener('loadedmetadata', () => {
             const duration = audio.duration * 1000;
             const widthPercentage = (duration / 10000) * 100;
-            const startTime = Date.now() % 10000; // Capture the start time
+            const startTime = (Date.now() - begin) % 10000; // Capture the start time
             const leftPercentage = (startTime / 10000) * 100; // Calculate left position based on startTime
 
             const soundBar = document.createElement('div');
@@ -127,34 +137,34 @@ document.addEventListener('DOMContentLoaded', () => {
             soundBar.dataset.sound = sound;
             soundBar.dataset.startTime = startTime;  // Store the precise startTime
 
+            const item = { element: soundBar, sound, startTime: startTime };
             timelines[selectedTimelineIndex].element.appendChild(soundBar);
-            timelines[selectedTimelineIndex].sounds.push({ element: soundBar, sound, startTime: startTime });
+            timelines[selectedTimelineIndex].sounds.push(item);
 
             soundBar.addEventListener('click', () => {
-                soundBar.remove();
-                const index = timelines[selectedTimelineIndex].sounds.indexOf(soundBar);
-                if (index > -1) {
+                const index = timelines[selectedTimelineIndex].sounds.indexOf(item);
+                console.log(index);
+                if (index != -1) {
+                    soundBar.remove();
                     timelines[selectedTimelineIndex].sounds.splice(index, 1);
                 }
             });
         });
-
-        audio.play();
     }
 
     function playAllTimelines() {
-        const currentTime = Date.now() % 10000;
+        const now = (Date.now() - begin) % 10000;
         timelines.forEach(timeline => {
             timeline.sounds.forEach(soundData => {
                 const soundStartTime = parseFloat(soundData.element.dataset.startTime);
-                const soundDuration = (soundData.element.offsetWidth / 100) * 10000;
 
-                if (currentTime >= soundStartTime && currentTime <= (soundStartTime + soundDuration)) {
+                if (soundStartTime >= prev && soundStartTime <= now) {
                     const audio = new Audio(`sounds/${soundData.sound}`);
                     audio.play();
                 }
             });
         });
+        prev = now;
     }
 
     function selectTimeline(index) {
